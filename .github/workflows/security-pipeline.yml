@@ -30,7 +30,7 @@ jobs:
           soft_fail: false
 
       - name: Filesystem and dependency scan (Trivy)
-        uses: uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: fs
           scan-ref: .
