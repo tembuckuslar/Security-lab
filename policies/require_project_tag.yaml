@@ -1,0 +1,12 @@
+metadata:
+  name: "Resources must carry the Project tag"
+  id: "CKV2_GROUP7_001"
+  category: "GENERAL_SECURITY"
+definition:
+  cond_type: "attribute"
+  resource_types:
+    - "aws_s3_bucket"
+    - "aws_instance"
+    - "aws_security_group"
+  attribute: "tags.Project"
+  operator: "exists"
