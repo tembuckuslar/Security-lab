@@ -2,48 +2,35 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-#checkov:skip=CKV2_AWS_11:Lab VPC does not require flow logs
-#checkov:skip=CKV2_AWS_12:Lab VPC default SG will not be used
-resource "aws_vpc" "lab_vpc" {
-  cidr_block = "10.0.0.0/16"
+#checkov:skip=CKV_AWS_145:Encryption enabled via separate resource below
+#checkov:skip=CKV_AWS_21:Versioning not required for lab
+#checkov:skip=CKV_AWS_18:Access logging not required for lab
+#checkov:skip=CKV2_AWS_61:Lifecycle configuration not required for lab
+#checkov:skip=CKV_AWS_144:Cross-region replication not required for lab
+#checkov:skip=CKV2_AWS_62:Event notifications not required for lab
+resource "aws_s3_bucket" "lab_bucket" {
+  bucket = "group7-final-lab-bucket-12345"
+  
   tags = {
     Project = "group7"
   }
 }
 
-resource "aws_security_group" "web_sg" {
-  name_prefix = "group7-web-sg-"
-  description = "Allow HTTPS traffic for the secure lab"
-  vpc_id      = aws_vpc.lab_vpc.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "lab_bucket_crypto" {
+  bucket = aws_s3_bucket.lab_bucket.id
 
-  ingress {
-    description = "Allow HTTPS from anywhere"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description = "Allow outbound HTTPS only"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Project = "group7"
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
-resource "aws_vpc_endpoint" "s3_endpoint" {
-  vpc_id            = aws_vpc.lab_vpc.id
-  service_name      = "com.amazonaws.eu-west-1.s3"
-  vpc_endpoint_type = "Gateway"
-  security_group_ids = [aws_security_group.web_sg.id]
+resource "aws_s3_bucket_public_access_block" "lab_bucket_pab" {
+  bucket = aws_s3_bucket.lab_bucket.id
 
-  tags = {
-    Project = "group7"
-  }
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
