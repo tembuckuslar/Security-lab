@@ -2,6 +2,8 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+#checkov:skip=CKV2_AWS_11:Lab VPC does not require flow logs
+#checkov:skip=CKV2_AWS_12:Lab VPC default SG will not be used
 resource "aws_vpc" "lab_vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
