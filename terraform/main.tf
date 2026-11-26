@@ -2,10 +2,17 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-#checkov:skip=CKV2_AWS_5:This is a standalone lab Security Group, not attached to an EC2 instance
+resource "aws_vpc" "lab_vpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    Project = "group7"
+  }
+}
+
 resource "aws_security_group" "web_sg" {
   name_prefix = "group7-web-sg-"
   description = "Allow HTTPS traffic for the secure lab"
+  vpc_id      = aws_vpc.lab_vpc.id
 
   ingress {
     description = "Allow HTTPS from anywhere"
@@ -22,6 +29,17 @@ resource "aws_security_group" "web_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Project = "group7"
+  }
+}
+
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id            = aws_vpc.lab_vpc.id
+  service_name      = "com.amazonaws.eu-west-1.s3"
+  vpc_endpoint_type = "Gateway"
+  security_group_ids = [aws_security_group.web_sg.id]
 
   tags = {
     Project = "group7"
