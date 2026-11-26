@@ -4,7 +4,7 @@ provider "aws" {
 
 #checkov:skip=CKV2_AWS_5:This is a standalone lab Security Group, not attached to an EC2 instance
 resource "aws_security_group" "web_sg" {
-  name        = "group7-web-sg"
+  name_prefix = "group7-web-sg-"
   description = "Allow HTTPS traffic for the secure lab"
 
   ingress {
