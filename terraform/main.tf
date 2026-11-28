@@ -12,3 +12,20 @@ resource "aws_cloudwatch_log_group" "lab_logs" {
     Project = "group7"
   }
 }
+resource "aws_security_group" "m6_test_ssh" {
+  name        = "m6-test-ssh"
+  description = "Case B test: SSH open to the world"
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["203.0.113.10/32"]
+  }
+
+  tags = {
+    Project = "group7-devsecops"
+    Owner   = "team"
+  }
+}
